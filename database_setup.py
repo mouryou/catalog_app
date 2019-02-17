@@ -2,13 +2,13 @@ import os
 import sys
 from sqlalchemy import Column, ForeignKey, String
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy import create_engine
 
 Base = declarative_base()
 
-class Catagory(Base):
-    __tablename__ = 'catagory'
+class Category(Base):
+    __tablename__ = 'category'
 
     name = Column(String(50), nullable=False, primary_key=True)
 
@@ -25,8 +25,8 @@ class Item(Base):
 
     name = Column(String(50), nullable=False, primary_key=True)
     description = Column(String(500))
-    catagory_name = Column(String, ForeignKey('catagory.name'))
-    catagory = relationship(Catagory)
+    category_name = Column(String, ForeignKey('category.name'))
+    category = relationship(Category)
 
     @property
     def serialize(self):
@@ -34,10 +34,24 @@ class Item(Base):
         return {
             'name': self.name,
             'description': self.description,
-            'catagory_name': self.catagory_name,
+            'category_name': self.category_name,
         }
 
 
 engine = create_engine('sqlite:///catalog.db')
 
 Base.metadata.create_all(engine)
+
+DBSession = sessionmaker(bind=engine)
+session = DBSession()
+
+if __name__ == '__main__':
+    # Add categories to the database
+    try:
+        for categoryName in ['Soccer', 'Basketball', 'Baseball', 'Frisbee', 'Snowboarding', 'Rock Climbing', 'Football', 'Skating', 'Hockey']:
+            newCategory = Category(name=categoryName)
+            session.add(newCategory)
+            session.commit()
+        print("Added categories successfully")
+    except:
+        print("Categories have already been added")

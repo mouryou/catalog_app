@@ -1,5 +1,15 @@
-from flask import Flask
+from flask import Flask, render_template, request, redirect, url_for, jsonify
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from database_setup import Base, Category, Item
+
 app = Flask(__name__)
+
+engine = create_engine('sqlite:///catalog.db')
+Base.metadata.bind = engine
+
+DBSession = sessionmaker(bind=engine)
+session = DBSession()
 
 @app.route('/')
 @app.route('/catalog/')
@@ -32,8 +42,10 @@ def deleteItem(item_name):
 
 @app.route('/catalog.json/')
 def catalogJSON():
-    return "json of catalog"
+    categories = session.query(Category).all()
+    return jsonify(Categories=[c.serialize for c in categories])
 
 if __name__ == '__main__':
+
     app.debug = True
     app.run(host='0.0.0.0', port=5000)
