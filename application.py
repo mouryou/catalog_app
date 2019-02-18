@@ -56,12 +56,22 @@ def addItem():
 
 @app.route('/item/<int:item_id>/edit/', methods=['GET', 'POST'])
 def editItem(item_id):
-    return "edit item " + str(item_id)
+    if request.method == 'POST':
+        return "edit item " + str(item_id)
+    else:
+        item = session.query(Item).filter_by(id=item_id).one()
+        return "edit item " + str(item_id)
 
 
 @app.route('/item/<int:item_id>/delete/', methods=['GET', 'POST'])
 def deleteItem(item_id):
-    return "delete item " + str(item_id)
+    item = session.query(Item).filter_by(id=item_id).one()
+    if request.method == 'POST':
+        session.delete(item)
+        session.commit()
+        return redirect(url_for('latestItems'))
+    else:
+        return render_template('deleteitem.html', item=item)
 
 
 @app.route('/catalog.json/')
