@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, desc
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, Category, Item
 
@@ -17,7 +17,9 @@ session = DBSession()
 @app.route('/catalog/')
 def latestItems():
     categories = session.query(Category).all()
-    return render_template('catalog.html', categories=categories)
+    # Items with greater ids are the items added most lately
+    latest = session.query(Item).order_by(desc(Item.id)).limit(8).all()
+    return render_template('catalog.html', categories=categories, latest=latest)
 
 
 @app.route('/catalog/<string:category_name>/')
