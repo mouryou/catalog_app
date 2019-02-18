@@ -35,32 +35,34 @@ def itemInfo(item_id):
     return render_template('iteminfo.html', item=item)
 
 
-@app.route('/catalog/<string:category_name>/<int:item_id>/json')
-def itemJSON(category_name, item_id):
-    return "json of " + item_id + " in category " + category_name
-
-
 @app.route('/item/add/', methods=['GET', 'POST'])
 def addItem():
+    categories = session.query(Category).all()
     if request.method == 'POST':
-        categories = session.query(Category).all()
         newItem = Item(
             name=request.form['name'], description=request.form['description'], category_name=request.form['category'])
         session.add(newItem)
         session.commit()
         return redirect(url_for('categoryItems', category_name=request.form['category']))
     else:
-        categories = session.query(Category).all()
         return render_template('additem.html', categories=categories)
 
 
 @app.route('/item/<int:item_id>/edit/', methods=['GET', 'POST'])
 def editItem(item_id):
+    item = session.query(Item).filter_by(id=item_id).one()
     if request.method == 'POST':
-        return "edit item " + str(item_id)
+        if request.form['name']:
+            item.name = request.form['name']
+        if request.form['description']:
+            item.description = request.form['description']
+        item.category_name = request.form['category']
+        session.add(item)
+        session.commit()
+        return redirect(url_for('itemInfo', item_id=item.id))
     else:
-        item = session.query(Item).filter_by(id=item_id).one()
-        return "edit item " + str(item_id)
+        categories = session.query(Category).all()
+        return render_template('edititem.html', categories=categories, item=item)
 
 
 @app.route('/item/<int:item_id>/delete/', methods=['GET', 'POST'])
@@ -78,6 +80,18 @@ def deleteItem(item_id):
 def catalogJSON():
     categories = session.query(Category).all()
     return jsonify(Categories=[c.serialize for c in categories])
+
+
+@app.route('/item/<int:item_id>/json')
+def itemJSON(item_id):
+    item = session.query(Item).filter_by(id=item_id).one()
+    return jsonify(item=item.serialize)
+
+
+@app.route('/catalog/<string:category_name>/json')
+def categoryJSON(category_name):
+    category = session.query(Category).filter_by(name=category_name).one()
+    return jsonify(category=category.serialize)
 
 
 if __name__ == '__main__':
