@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Catalog</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <style>
+        .bd-placeholder-img {
+            font-size: 1.125rem;
+            text-anchor: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        @media (min-width: 768px) {
+            .bd-placeholder-img-lg {
+                font-size: 3.5rem;
+            }
+        }
+
+        body {
+            min-height: 75rem;
+            padding-top: 4.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+        <a class="navbar-brand" href="/">Catalog App</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse"
+            aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </nav>
+
+    <main role="main" class="container">
+        <div class="jumbotron">
+            <div class="row">
+                <div class="col-3">
+                    <h2>Categories</h2>
+                    {% for c in categories %}
+                    <a href="{{url_for('categoryItems', category_name=c.name)}}">
+                        <h4>{{c.name}}</h4>
+                    </a>
+                    {% endfor %}
+                </div>
+                <div style="border-left:1px solid rgb(124, 124, 124);height:box-sizing"></div>
+
+                <div class="col-8">
+                    <h2>{{ category_name }}</h2>
+                    {% for i in items %}
+                    <a href="{{url_for('itemInfo', category_name=category_name, item_id=i.id)}}">
+                        <h4>{{i.name}}</h4>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>
