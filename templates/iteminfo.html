@@ -44,27 +44,19 @@
 
     <main role="main" class="container">
         <div class="jumbotron">
-            <div class="row">
-                <div class="col-3">
-                    <h2>Categories</h2>
-                    {% for c in categories %}
-                    <a href="{{url_for('categoryItems', category_name=c.name)}}">
-                        <h4>{{c.name}}</h4>
-                    </a>
-                    {% endfor %}
-                </div>
-                <div style="border-left:1px solid rgb(124, 124, 124);height:box-sizing"></div>
-
-                <div class="col-8">
-                    <a href="{{url_for('addItem')}}">Add Item</a>
-                    <h2>{{ category_name }}</h2>
-                    {% for i in items %}
-                    <a href="{{url_for('itemInfo', item_id=i.id)}}">
-                        <h4>{{i.name}}</h4>
-                    </a>
-                    {% endfor %}
-                </div>
-            </div>
+            <dl>
+                <dt>Name:</dt>
+                <dd>{{item.name}}</dd>
+                <dt>Description:</dt>
+                <dd>{{item.description}}</dd>
+                <dt>Category:</dt>
+                <dd><a href="{{url_for('categoryItems', category_name=item.category_name)}}">{{item.category_name}}</a>
+                </dd>
+            </dl>
+            <hr>
+            <a href="{{url_for('editItem', item_id=item.id)}}">Edit</a>
+            |
+            <a href="{{url_for('deleteItem', item_id=item.id)}}">Delete</a>
         </div>
     </main>
 </body>

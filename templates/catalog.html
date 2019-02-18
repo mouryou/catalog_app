@@ -59,7 +59,7 @@
           <a href="{{url_for('addItem')}}">Add Item</a>
           <h2>Latest Items</h2>
           {% for l in latest %}
-          <a href="{{url_for('itemInfo', category_name=category_name, item_id=l.id)}}">
+          <a href="{{url_for('itemInfo', item_id=l.id)}}">
             <h4>{{l.name}}</h4>
           </a>
           {% endfor %}

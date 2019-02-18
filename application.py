@@ -29,9 +29,10 @@ def categoryItems(category_name):
     return render_template('categoryitem.html', categories=categories, category_name=category_name, items=items)
 
 
-@app.route('/catalog/<string:category_name>/<int:item_id>/')
-def itemInfo(category_name, item_id):
-    return "page of information of " + item_id + " in category " + category_name
+@app.route('/catalog/<int:item_id>/')
+def itemInfo(item_id):
+    item = session.query(Item).filter_by(id=item_id).one()
+    return render_template('iteminfo.html', item=item)
 
 
 @app.route('/catalog/<string:category_name>/<int:item_id>/json')
@@ -55,12 +56,12 @@ def addItem():
 
 @app.route('/item/<int:item_id>/edit/', methods=['GET', 'POST'])
 def editItem(item_id):
-    return "edit item " + item_id
+    return "edit item " + str(item_id)
 
 
 @app.route('/item/<int:item_id>/delete/', methods=['GET', 'POST'])
 def deleteItem(item_id):
-    return "delete item " + item_id
+    return "delete item " + str(item_id)
 
 
 @app.route('/catalog.json/')
