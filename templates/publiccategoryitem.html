@@ -3,9 +3,7 @@
 
 {% include "header.html" %}
 
-
 <body>
-
 
     <main role="main" class="container">
         <div class="jumbotron">
@@ -21,12 +19,11 @@
                 <div style="border-left:1px solid rgb(124, 124, 124);height:box-sizing"></div>
 
                 <div class="col-8">
-                    <a href="{{url_for('addItem')}}">Add Item</a> |
-                    <a href="{{url_for('gdisconnect')}}">Logout</a>
-                    <h2>Latest Items</h2>
-                    {% for l in latest %}
-                    <a href="{{url_for('itemInfo', item_id=l.id)}}">
-                        <h4>{{l.name}}</h4>
+                    <a href="{{url_for('showLogin')}}">Login</a>
+                    <h2>{{ category_name }}</h2>
+                    {% for i in items %}
+                    <a href="{{url_for('itemInfo', item_id=i.id)}}">
+                        <h4>{{i.name}}</h4>
                     </a>
                     {% endfor %}
                 </div>
