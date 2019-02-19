@@ -15,6 +15,7 @@ import requests
 
 app = Flask(__name__)
 
+# load client id
 CLIENT_ID = json.loads(
     open('client_secrets.json', 'r').read())['web']['client_id']
 APPLICATION_NAME = "Catalog Application"
@@ -129,6 +130,7 @@ def gconnect():
 @app.route('/gdisconnect')
 def gdisconnect():
     access_token = login_session.get('access_token')
+    # Only disconnect when the user is connected
     if access_token is None:
         print 'Access Token is None'
         response = make_response(json.dumps(
@@ -145,6 +147,7 @@ def gdisconnect():
     print 'result is '
     print result
     if result['status'] == '200':
+        # If succeed, reset the user's sesson.
         del login_session['access_token']
         del login_session['gplus_id']
         del login_session['username']
@@ -154,6 +157,7 @@ def gdisconnect():
         response.headers['Content-Type'] = 'application/json'
         return response
     else:
+        # For whatever reason, the given token was invalid.
         response = make_response(json.dumps(
             'Failed to revoke token for given user.', 400))
         response.headers['Content-Type'] = 'application/json'
