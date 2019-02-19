@@ -141,7 +141,7 @@ def gdisconnect():
     url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % login_session['access_token']
     h = httplib2.Http()
     result = h.request(url, 'GET')[0]
-    
+
     print 'result is '
     print result
     if result['status'] == '200':
@@ -176,13 +176,20 @@ def latestItems():
 def categoryItems(category_name):
     categories = session.query(Category).all()
     items = session.query(Item).filter_by(category_name=category_name).all()
-    return render_template('categoryitem.html', categories=categories, category_name=category_name, items=items)
+    if 'username' not in login_session:
+        return render_template('publiccategoryitem.html', categories=categories, category_name=category_name, items=items)
+    else:
+        return render_template('categoryitem.html', categories=categories, category_name=category_name, items=items)
 
 
 @app.route('/catalog/<int:item_id>/')
 def itemInfo(item_id):
     item = session.query(Item).filter_by(id=item_id).one()
-    return render_template('iteminfo.html', item=item)
+    creator = getUserInfo(item.user_id)
+    if 'username' not in login_session or creator.id != login_session['user_id']:
+        return render_template('publiciteminfo.html', item=item)
+    else:
+        return render_template('iteminfo.html', item=item)
 
 
 @app.route('/item/add/', methods=['GET', 'POST'])
@@ -200,7 +207,11 @@ def addItem():
 
 @app.route('/item/<int:item_id>/edit/', methods=['GET', 'POST'])
 def editItem(item_id):
+    if 'username' not in login_session:
+        return redirect('/login')
     item = session.query(Item).filter_by(id=item_id).one()
+    if item.user_id != login_session['user_id']:
+        return "<script>function myFunction() {alert('You are not authorized to edit this restaurant. Please create your own restaurant in order to edit.');}</script><body onload='myFunction()''>"
     if request.method == 'POST':
         if request.form['name']:
             item.name = request.form['name']
@@ -217,7 +228,11 @@ def editItem(item_id):
 
 @app.route('/item/<int:item_id>/delete/', methods=['GET', 'POST'])
 def deleteItem(item_id):
+    if 'username' not in login_session:
+        return redirect('/login')
     item = session.query(Item).filter_by(id=item_id).one()
+    if item.user_id != login_session['user_id']:
+        return "<script>function myFunction() {alert('You are not authorized to edit this restaurant. Please create your own restaurant in order to edit.');}</script><body onload='myFunction()''>"
     if request.method == 'POST':
         session.delete(item)
         session.commit()

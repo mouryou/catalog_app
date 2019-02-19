@@ -3,40 +3,36 @@
 
 {% include "header.html" %}
 
+
 <body>
-	<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-		<a class="navbar-brand" href="/">Catalog App</a>
-		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse"
-			aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-			<span class="navbar-toggler-icon"></span>
-		</button>
-	</nav>
 
-	<main role="main" class="container">
-		<div class="jumbotron">
-			<div class="row">
-				<div class="col-3">
-					<h2>Categories</h2>
-					{% for c in categories %}
-					<a href="{{url_for('categoryItems', category_name=c.name)}}">
-						<h4>{{c.name}}</h4>
-					</a>
-					{% endfor %}
-				</div>
-				<div style="border-left:1px solid rgb(124, 124, 124);height:box-sizing"></div>
 
-				<div class="col-8">
-					<a href="{{url_for('addItem')}}">Add Item</a>
-					<h2>Latest Items</h2>
-					{% for l in latest %}
-					<a href="{{url_for('itemInfo', item_id=l.id)}}">
-						<h4>{{l.name}}</h4>
-					</a>
-					{% endfor %}
-				</div>
-			</div>
-		</div>
-	</main>
+    <main role="main" class="container">
+        <div class="jumbotron">
+            <div class="row">
+                <div class="col-3">
+                    <h2>Categories</h2>
+                    {% for c in categories %}
+                    <a href="{{url_for('categoryItems', category_name=c.name)}}">
+                        <h4>{{c.name}}</h4>
+                    </a>
+                    {% endfor %}
+                </div>
+                <div style="border-left:1px solid rgb(124, 124, 124);height:box-sizing"></div>
+
+                <div class="col-8">
+                    <a href="{{url_for('addItem')}}">Add Item</a> |
+                    <a href="{{url_for('gdisconnect')}}">Logout</a>
+                    <h2>Latest Items</h2>
+                    {% for l in latest %}
+                    <a href="{{url_for('itemInfo', item_id=l.id)}}">
+                        <h4>{{l.name}}</h4>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </main>
 </body>
 
 </html>

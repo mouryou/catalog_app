@@ -19,6 +19,8 @@
 
 
     <!-- GOOGLE PLUS SIGN IN-->
+
+
     <div id="signinButton">
         <span class="g-signin" data-scope="openid email profile"
             data-clientid="885675475445-e5hv8n6nteui6lvo6u3iqsmovh3qsrg4.apps.googleusercontent.com"
@@ -46,7 +48,7 @@
                         if (result) {
                             $('#result').html('Login Successful!</br>' + result + '</br>Redirecting...')
                             setTimeout(function () {
-                                window.location.href = "/catalog/";
+                                window.location.href = "/catalog";
                             }, 4000);
 
                         } else if (authResult['error']) {
@@ -60,6 +62,9 @@
             }
         }
     </script>
+
+
+
     <!--END GOOGLE PLUS SIGN IN -->
 
 </body>

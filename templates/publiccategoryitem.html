@@ -20,10 +20,10 @@
 
                 <div class="col-8">
                     <a href="{{url_for('showLogin')}}">Login</a>
-                    <h2>Latest Items</h2>
-                    {% for l in latest %}
-                    <a href="{{url_for('itemInfo', item_id=l.id)}}">
-                        <h4>{{l.name}}</h4>
+                    <h2>{{ category_name }}</h2>
+                    {% for i in items %}
+                    <a href="{{url_for('itemInfo', item_id=i.id)}}">
+                        <h4>{{i.name}}</h4>
                     </a>
                     {% endfor %}
                 </div>
