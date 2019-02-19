@@ -166,7 +166,10 @@ def latestItems():
     categories = session.query(Category).all()
     # Items with greater ids are the items added most lately
     latest = session.query(Item).order_by(desc(Item.id)).limit(8).all()
-    return render_template('catalog.html', categories=categories, latest=latest)
+    if 'username' not in login_session:
+        return render_template('publiccatalog.html', categories=categories, latest=latest)
+    else:
+        return render_template('catalog.html', categories=categories, latest=latest)
 
 
 @app.route('/catalog/<string:category_name>/')
