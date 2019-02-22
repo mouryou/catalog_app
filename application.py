@@ -31,6 +31,10 @@ session = DBSession()
 
 @app.route('/login')
 def showLogin():
+    """Renders the login page
+
+    """
+
     state = ''.join(random.choice(string.ascii_uppercase + string.digits)
                     for x in range(32))
     login_session['state'] = state
@@ -39,6 +43,13 @@ def showLogin():
 
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
+    """Login with the google account of the user, deal with different
+    possible cases and return the result of login
+
+    Returns:
+        string -- the html page for the result of login
+    """
+
     # Validate the state token
     if request.args.get('state') != login_session['state']:
         response = make_response(json.dumps('Invalid state parameter.'), 401)
@@ -132,6 +143,10 @@ def gconnect():
 
 @app.route('/gdisconnect')
 def gdisconnect():
+    """function for user to logout from the app
+
+    """
+
     access_token = login_session.get('access_token')
     # Only disconnect when the user is connected
     if access_token is None:
@@ -171,6 +186,10 @@ def gdisconnect():
 @app.route('/')
 @app.route('/catalog/')
 def latestItems():
+    """Renders the catalog page according to whether the user has logged in
+
+    """
+
     categories = session.query(Category).all()
     # Items with greater ids are the items added most lately
     latest = session.query(Item).order_by(desc(Item.id)).limit(8).all()
@@ -183,7 +202,15 @@ def latestItems():
 
 
 @app.route('/catalog/<string:category_name>/')
-def categoryItems(category_name):
+def catregoryItems(category_name):
+    """Renders the page for the items under a category. Only logged in
+    users can see the button for adding items
+
+    Arguments:
+        category_name {string} -- the name of the category
+
+    """
+
     categories = session.query(Category).all()
     items = session.query(Item).filter_by(category_name=category_name).all()
     if 'username' not in login_session:
@@ -197,6 +224,14 @@ def categoryItems(category_name):
 
 @app.route('/catalog/<int:item_id>/')
 def itemInfo(item_id):
+    """Renders the info page of an item. Only the user who created
+    the item can edit or delete the item
+
+    Arguments:
+        item_id {int} -- the id of the item
+
+    """
+
     item = session.query(Item).filter_by(id=item_id).one()
     creator = getUserInfo(item.user_id)
     if 'username' not in login_session or \
@@ -208,6 +243,13 @@ def itemInfo(item_id):
 
 @app.route('/item/add/', methods=['GET', 'POST'])
 def addItem():
+    """Renders the page for adding items. Only users who logged
+    in can add items
+
+    """
+
+    if 'username' not in login_session:
+        return redirect('/login')
     categories = session.query(Category).all()
     if request.method == 'POST':
         newItem = Item(
@@ -225,6 +267,14 @@ def addItem():
 
 @app.route('/item/<int:item_id>/edit/', methods=['GET', 'POST'])
 def editItem(item_id):
+    """Renders the page to edit items. Only the user who created the item
+    can edit it.
+
+    Arguments:
+        item_id {int} -- the id of the item
+
+    """
+
     if 'username' not in login_session:
         return redirect('/login')
     item = session.query(Item).filter_by(id=item_id).one()
@@ -249,6 +299,14 @@ def editItem(item_id):
 
 @app.route('/item/<int:item_id>/delete/', methods=['GET', 'POST'])
 def deleteItem(item_id):
+    """Renders the page for deleting items. Only the user who created
+    the item can delete it
+
+    Arguments:
+        item_id {int} -- the id of the item
+
+    """
+
     if 'username' not in login_session:
         return redirect('/login')
     item = session.query(Item).filter_by(id=item_id).one()
@@ -266,23 +324,50 @@ def deleteItem(item_id):
 
 @app.route('/catalog.json/')
 def catalogJSON():
+    """The JSON file of the categories in the catalog
+
+    """
+
     categories = session.query(Category).all()
     return jsonify(Categories=[c.serialize for c in categories])
 
 
 @app.route('/item/<int:item_id>/json')
 def itemJSON(item_id):
+    """The JSON file of the info of an item
+
+    Arguments:
+        item_id {int} -- the id of an item
+
+    """
+
     item = session.query(Item).filter_by(id=item_id).one()
     return jsonify(item=item.serialize)
 
 
 @app.route('/catalog/<string:category_name>/json')
 def categoryJSON(category_name):
+    """The JSON file of the info of a category
+
+    Arguments:
+        category_name {string} -- the name of the category
+
+    """
+
     category = session.query(Category).filter_by(name=category_name).one()
     return jsonify(category=category.serialize)
 
 
 def createUser(login_session):
+    """Create a new user and store the information in the login session
+
+    Arguments:
+        login_session {LocalProxy} -- the session for user login
+
+    Returns:
+        int -- the id of the user
+    """
+
     newUser = User(name=login_session['username'], email=login_session[
                    'email'], picture=login_session['picture'])
     session.add(newUser)
@@ -292,11 +377,29 @@ def createUser(login_session):
 
 
 def getUserInfo(user_id):
+    """Get the information of a user by its id
+
+    Arguments:
+        user_id {int} -- the id of the user
+
+    Returns:
+        User -- the object of a user
+    """
+
     user = session.query(User).filter_by(id=user_id).one()
     return user
 
 
 def getUserID(email):
+    """Get the id of a user by the email
+
+    Arguments:
+        email {string} -- the email of the user
+
+    Returns:
+        int -- the id of the user
+    """
+
     try:
         user = session.query(User).filter_by(email=email).one()
         return user.id
