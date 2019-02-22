@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify, flash
+from flask import Flask, render_template, request, redirect
+from flask import url_for, jsonify, flash
 from sqlalchemy import create_engine, desc
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, Category, Item, User
@@ -88,8 +89,9 @@ def gconnect():
     stored_access_token = login_session.get('access_token')
     stored_gplus_id = login_session.get('gplus_id')
     if stored_access_token is not None and gplus_id == stored_gplus_id:
-        response = make_response(json.dumps('Current user is already connected.'),
-                                 200)
+        response = make_response(
+            json.dumps('Current user is already connected.'),
+            200)
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -121,7 +123,8 @@ def gconnect():
     output += '!</h1>'
     output += '<img src="'
     output += login_session['picture']
-    output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
+    output += ' " style = "width: 300px; height: 300px;border-radius: 150px;'
+    output += '-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
     flash("you are now logged in as %s" % login_session['username'])
     print "done!"
     return output
@@ -140,7 +143,8 @@ def gdisconnect():
     print 'In gdisconnect access token is %s', access_token
     print 'User name is: '
     print login_session['username']
-    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % login_session['access_token']
+    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % \
+        login_session['access_token']
     h = httplib2.Http()
     result = h.request(url, 'GET')[0]
 
@@ -171,9 +175,11 @@ def latestItems():
     # Items with greater ids are the items added most lately
     latest = session.query(Item).order_by(desc(Item.id)).limit(8).all()
     if 'username' not in login_session:
-        return render_template('publiccatalog.html', categories=categories, latest=latest)
+        return render_template('publiccatalog.html',
+                               categories=categories, latest=latest)
     else:
-        return render_template('catalog.html', categories=categories, latest=latest)
+        return render_template('catalog.html',
+                               categories=categories, latest=latest)
 
 
 @app.route('/catalog/<string:category_name>/')
@@ -181,16 +187,20 @@ def categoryItems(category_name):
     categories = session.query(Category).all()
     items = session.query(Item).filter_by(category_name=category_name).all()
     if 'username' not in login_session:
-        return render_template('publiccategoryitem.html', categories=categories, category_name=category_name, items=items)
+        return render_template('publiccategoryitem.html',
+                               categories=categories,
+                               category_name=category_name, items=items)
     else:
-        return render_template('categoryitem.html', categories=categories, category_name=category_name, items=items)
+        return render_template('categoryitem.html', categories=categories,
+                               category_name=category_name, items=items)
 
 
 @app.route('/catalog/<int:item_id>/')
 def itemInfo(item_id):
     item = session.query(Item).filter_by(id=item_id).one()
     creator = getUserInfo(item.user_id)
-    if 'username' not in login_session or creator.id != login_session['user_id']:
+    if 'username' not in login_session or \
+            creator.id != login_session['user_id']:
         return render_template('publiciteminfo.html', item=item)
     else:
         return render_template('iteminfo.html', item=item)
@@ -201,10 +211,14 @@ def addItem():
     categories = session.query(Category).all()
     if request.method == 'POST':
         newItem = Item(
-            name=request.form['name'], description=request.form['description'], category_name=request.form['category'], user_id=login_session['user_id'])
+            name=request.form['name'],
+            description=request.form['description'],
+            category_name=request.form['category'],
+            user_id=login_session['user_id'])
         session.add(newItem)
         session.commit()
-        return redirect(url_for('categoryItems', category_name=request.form['category']))
+        return redirect(url_for('categoryItems',
+                                category_name=request.form['category']))
     else:
         return render_template('additem.html', categories=categories)
 
@@ -215,7 +229,9 @@ def editItem(item_id):
         return redirect('/login')
     item = session.query(Item).filter_by(id=item_id).one()
     if item.user_id != login_session['user_id']:
-        return "<script>function myFunction() {alert('You are not authorized to edit this restaurant. Please create your own restaurant in order to edit.');}</script><body onload='myFunction()''>"
+        return "<script>function myFunction() {alert('You are not authorized \
+            to edit this restaurant. Please create your own restaurant in \
+            order to edit.');}</script><body onload='myFunction()''>"
     if request.method == 'POST':
         if request.form['name']:
             item.name = request.form['name']
@@ -227,7 +243,8 @@ def editItem(item_id):
         return redirect(url_for('itemInfo', item_id=item.id))
     else:
         categories = session.query(Category).all()
-        return render_template('edititem.html', categories=categories, item=item)
+        return render_template('edititem.html',
+                               categories=categories, item=item)
 
 
 @app.route('/item/<int:item_id>/delete/', methods=['GET', 'POST'])
@@ -236,7 +253,9 @@ def deleteItem(item_id):
         return redirect('/login')
     item = session.query(Item).filter_by(id=item_id).one()
     if item.user_id != login_session['user_id']:
-        return "<script>function myFunction() {alert('You are not authorized to edit this restaurant. Please create your own restaurant in order to edit.');}</script><body onload='myFunction()''>"
+        return "<script>function myFunction() {alert('You are not authorized \
+            to edit this restaurant. Please create your own restaurant in \
+            order to edit.');}</script><body onload='myFunction()''>"
     if request.method == 'POST':
         session.delete(item)
         session.commit()

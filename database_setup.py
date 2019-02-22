@@ -63,7 +63,9 @@ session = DBSession()
 if __name__ == '__main__':
     # Add categories to the database
     try:
-        for categoryName in ['Soccer', 'Basketball', 'Baseball', 'Frisbee', 'Snowboarding', 'Rock Climbing', 'Football', 'Skating', 'Hockey']:
+        for categoryName in ['Soccer', 'Basketball', 'Baseball', 'Frisbee',
+                             'Snowboarding', 'Rock Climbing', 'Football',
+                             'Skating', 'Hockey']:
             newCategory = Category(name=categoryName)
             session.add(newCategory)
             session.commit()
