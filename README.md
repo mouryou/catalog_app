@@ -7,7 +7,7 @@
 - [SQLAlchemy](https://www.sqlalchemy.org/)
 - [oauth2client](https://github.com/googleapis/oauth2client)
   
-Please follow these pages to install them before running the project.  
+Make sure you are using python2.7, and run `pip install -r requirements.txt` to install these packages. 
 This project is tested in Ubuntu 16.04.5 LTS.  
 
 ## Instructions
