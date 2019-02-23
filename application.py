@@ -202,7 +202,7 @@ def latestItems():
 
 
 @app.route('/catalog/<string:category_name>/')
-def catregoryItems(category_name):
+def categoryItems(category_name):
     """Renders the page for the items under a category. Only logged in
     users can see the button for adding items
 
